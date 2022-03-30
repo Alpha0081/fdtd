@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "fdtd"
+version = "0.1.0"
+description = "1-D FDTD"
+authors = ["Artem Mikhailov <artem.mihaylov.2017@gmail.com>"]
+license = "GPLv3"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+matplotlib = "numpy"
+
+[tool.poetry.dev-dependencies]
+matplotlib = "^3.5.1"
+numpy = "^1.22.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
