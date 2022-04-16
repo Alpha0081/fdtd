@@ -8,10 +8,14 @@ license = "GPLv3"
 [tool.poetry.dependencies]
 python = "^3.10"
 matplotlib = "numpy"
+PyQt5 = "^5.15.6"
 
 [tool.poetry.dev-dependencies]
 matplotlib = "^3.5.1"
 numpy = "^1.22.3"
+mypy = "^0.942"
+pytest = "^7.1.1"
+data-science-types = "^0.2.23"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,33 +1,58 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import numpy as np
 import matplotlib.pyplot as plt
-from probe import Probe
+import numpy as np
+
+from PyQt5.QtWidgets import QApplication
+from constants import c
 from display import Display
-from source import Source
 from fdtd import FDTD
-from signals import get_function, Signal, SignalType
+from layer import Layer
+from probe import Probe
+from source import (
+    SourceGauss,
+    SourceHarmonic,
+    SourceModulatedGaussian,
+    SourceRectangular,
+)
+import sys
+from GUI.mainwindow import MainWindow
+
 
 if __name__ == "__main__":
+    #  app = QApplication(sys.argv)
+    #  execute = MainWindow()
+    #  sys.exit()
+    fdtd = FDTD(5, 5e-3, 1e-7, 1)
+    #  fdtd.add_source(SourceModulatedGaussian(0.02, 0.5e-10, .125e-10, .25e-10, np.pi))
+    #  fdtd.add_source(SourceGauss(0.02, 0.50e-9, .25e-9))
+    fdtd.add_source(SourceHarmonic(1.5, 1e-10, c, 0))
+    #  fdtd.add_source(SourceHarmonic(1.5, 1e-10, 2 * c / 3, np.pi))
 
-    fdtd = FDTD(500, 0.5, 4e-6, 1)
-    fdtd.add_source(Source(50, Signal.get_function(signal_type=SignalType.GAUSSIAN, delay=0.5e-6, duration=0.5e-7, fdtd=fdtd, pos=50)))
+    #  fdtd.add_source(SourceRectangular(0.02, 1e-9, .3e-10))
     #  fdtd.add_source(
-        #  Source(
-            #  100,
-            #  Signal.get_function(
-                #  signal_type=SignalType.RECTANGULAR,
-                #  delay=0.25e-6,
-                #  duration=0.5e-7,
-                #  fdtd=fdtd,
-                #  pos=100,
-            #  ),
-        #  )
+    #  Source(
+    #  100,
+    #  Signal.get_function(
+    #  signal_type=SignalType.RECTANGULAR,
+    #  delay=0.25e-6,
+    #  duration=0.5e-7,
+    #  fdtd=fdtd,
+    #  pos=100,
+    #  ),
     #  )
-    fdtd.add_probes([20, 70])
-    #  fdtd.set_eps((0, 500), 4)
-    fdtd.set_eps((120, 200), 9)
-    #  fdtd.set_eps((125, 200), 36)
+    #  )
+    fdtd.add_probes([2.5, 2.75, 3, 3.25, 3.5, 3.75, 4, 4.25])
+    #  fdtd.set_eps((0.06, 0.12), 3.5)
+    #  fdtd.set_sigma((0.06, 0.12), .001)
+    #  fdtd.add_layer(Layer((0.06, 0.12), 9, 1, 0.005))
+    fdtd.add_layer(Layer((4.5, 5), 2, 1))
+    #  fdtd.set_sigma((0.12, 0.18), .002)
+    #  fdtd.set_sigma((0.18, 0.28), .003)
+    #  fdtd.set_sigma((0.28, 0.5), .004)
+    #  fdtd.set_eps((0.12, 0.18), 2.2)
+    #  fdtd.set_eps((0.18, 0.28), 4)
+    #  fdtd.set_eps((0.28, 0.5), 6)
     fdtd.analyze()
     fdtd.showProbeSignals()

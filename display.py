@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
 import numpy as np
-
+from typing import Tuple
 
 class Display:
     """Display."""
 
-    def __init__(self, x_lim: tuple, y_lim: tuple, y_label: str) -> None:
+    def __init__(self, x_lim: tuple[int], y_lim: Tuple[float], y_label: str) -> None:
         self.__xlim = x_lim
         self.__ylim = y_lim
         self.__ylabel = y_label
@@ -61,6 +61,7 @@ class Display:
             self.__ax.plot(
                 [position, position], self.__ylim, "--k"
             )
+        return True
 
     def stop(self) -> bool:
         """stop.
@@ -70,7 +71,7 @@ class Display:
         plt.ioff()
         return True
 
-    def update_data(self, data: np.ndarray, time: int) -> bool:
+    def update_data(self, data: np.ndarray, time: float) -> bool:
         """update_data.
 
         :param data:
