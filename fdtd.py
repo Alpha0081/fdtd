@@ -136,7 +136,9 @@ class FDTD:
     def delete_layer(self, name: str) -> bool:
         for i, layer in enumerate(self.__layers):
             if layer.name == name:
-                begin, end = int(layer.field[0] / self.__dx), int(layer.field[1] / self.__dx)
+                begin, end = int(layer.field[0] / self.__dx), int(
+                    layer.field[1] / self.__dx
+                )
                 self.__eps[begin:end] = 1
                 self.__mu[begin:end] = 1
                 self.__sigma[begin:end] = 0

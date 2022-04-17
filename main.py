@@ -1,24 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
-
 from PyQt5.QtWidgets import QApplication
+
 from constants import c
 from display import Display
 from fdtd import FDTD
+from GUI.mainwindow import MainWindow
 from layer import Layer
 from probe import Probe
-from source import (
-    SourceGauss,
-    SourceHarmonic,
-    SourceModulatedGaussian,
-    SourceRectangular,
-)
-import sys
-from GUI.mainwindow import MainWindow
-
+from source import (SourceGauss, SourceHarmonic, SourceModulatedGaussian,
+                    SourceRectangular)
 
 if __name__ == "__main__":
     #  app = QApplication(sys.argv)
@@ -55,4 +51,4 @@ if __name__ == "__main__":
     #  fdtd.set_eps((0.18, 0.28), 4)
     #  fdtd.set_eps((0.28, 0.5), 6)
     fdtd.analyze()
-    fdtd.showProbeSignals()
+    fdtd.show_probe_signals()

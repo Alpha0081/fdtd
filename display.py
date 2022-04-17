@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from typing import Tuple
+
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Tuple
+
 
 class Display:
     """Display."""
@@ -24,9 +26,7 @@ class Display:
         self.__ax.set_ylim(self.__ylim)
         self.__ax.set_xlabel("м")
         self.__ax.grid()
-        (self.__yline,) = self.__ax.plot(
-            self.__xlist * dx, np.zeros(self.__xlim[1])
-        )
+        (self.__yline,) = self.__ax.plot(self.__xlist * dx, np.zeros(self.__xlim[1]))
         return True
 
     def draw_probes(self, probes: list, dx: float) -> bool:
@@ -58,9 +58,7 @@ class Display:
         :rtype: bool
         """
         for position in positions:
-            self.__ax.plot(
-                [position, position], self.__ylim, "--k"
-            )
+            self.__ax.plot([position, position], self.__ylim, "--k")
         return True
 
     def stop(self) -> bool:
@@ -85,6 +83,3 @@ class Display:
         self.__fig.canvas.draw()
         self.__fig.canvas.flush_events()
         return True
-
-
-

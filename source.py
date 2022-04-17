@@ -276,30 +276,36 @@ class SourceRectangular(Source):
 
 class SourceHarmonic(Source):
     def __init__(
-        self, position: float, delay: float, frequency: float, phase: float,
-        count=None) -> None:
+        self, position: float, delay: float, frequency: float, phase: float, count=None
+    ) -> None:
         self.__position: float = position
         self.__delay = delay
         self.__frequency = frequency
         self.__phase = phase
-        self.__count = count    
+        self.__count = count
 
     def E(self, m: float, q: float) -> float:
-        return np.sin(
-            2
-            * np.pi
-            * self.__frequency
-            * self.__dt
-            * (q - m * self.__eps * self.__mu / self.__Sc)
-            + self.__phase
-        ) if self.__count is None else np.sin(
-            2
-            * np.pi
-            * self.__frequency
-            * self.__dt
-            * (q - m * self.__eps * self.__mu / self.__Sc)
-            + self.__phase
-        ) if q * self.__dt <= self.__count / self.__frequency else 0
+        return (
+            np.sin(
+                2
+                * np.pi
+                * self.__frequency
+                * self.__dt
+                * (q - m * self.__eps * self.__mu / self.__Sc)
+                + self.__phase
+            )
+            if self.__count is None
+            else np.sin(
+                2
+                * np.pi
+                * self.__frequency
+                * self.__dt
+                * (q - m * self.__eps * self.__mu / self.__Sc)
+                + self.__phase
+            )
+            if q * self.__dt <= self.__count / self.__frequency
+            else 0
+        )
 
     @property
     def position(self) -> float:
