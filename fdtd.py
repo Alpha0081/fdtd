@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 
-from constants import W_0, c
-from display import Display
-from layer import Layer
-from probe import Probe
-from source import Source
-from boundary import PECLeft, PECRight, ABCFirstLeft, ABCFirstRight, ABCSecondLeft, ABCSecondRight
+from .constants import W_0, c
+from .display import Display
+from .layer import Layer
+from .probe import Probe
+from .source import Source
+from .boundary import PECLeft, PECRight, ABCFirstLeft, ABCFirstRight, ABCSecondLeft, ABCSecondRight
 
 class FDTD:
     def __init__(
@@ -107,6 +107,9 @@ class FDTD:
                 self.__display.update_data(self.__E, q * self.__dt)
                 self.__display.stop()
         return True
+
+    def get_probe(self) -> npt.NDArray[Probe]:
+        return self.__probes 
 
     def show_probe_signals(self) -> bool:
         fig, ax = plt.subplots()

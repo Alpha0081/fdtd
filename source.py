@@ -286,7 +286,7 @@ class SourceHarmonic(Source):
 
     def E(self, m: float, q: float) -> float:
         return (
-            0.25 * np.sin(
+            np.sin(
                 2
                 * np.pi
                 * self.__frequency

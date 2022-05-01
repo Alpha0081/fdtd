@@ -3,8 +3,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from probe import Probe
-from source import Source
+from .probe import Probe
+from .source import Source
 from typing import List
 
 
