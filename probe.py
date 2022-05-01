@@ -11,7 +11,7 @@ class Probe:
         self.__H = np.zeros(max_time)
         self.__time = 0
 
-    def update_data(self, E: np.ndarray, H: np.ndarray) -> bool:
+    def add_data(self, E: np.ndarray, H: np.ndarray) -> bool:
         self.__E[self.__time] = E[self.__position]
         self.__H[self.__time] = H[self.__position]
         self.__time += 1

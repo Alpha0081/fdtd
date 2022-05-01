@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from types import FunctionType, MethodType
 
 import numpy as np
 
 
-class Source(ABC):
+class Source(metaclass=ABCMeta):
     @abstractmethod
     def E(self, m: float, q: float) -> float:
         pass
@@ -286,7 +286,7 @@ class SourceHarmonic(Source):
 
     def E(self, m: float, q: float) -> float:
         return (
-            np.sin(
+            0.25 * np.sin(
                 2
                 * np.pi
                 * self.__frequency

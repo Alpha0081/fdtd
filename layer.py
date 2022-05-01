@@ -4,12 +4,16 @@
 
 class Layer:
     def __init__(
-        self, field: tuple[float], eps: float = 1, mu: float = 1, sigma: float = 0
+        self,
+        area: tuple[float, float],
+        eps: float = 1.,
+        mu: float = 1.,
+        sigma: float = 0.,
     ) -> None:
         self.__eps: float = eps
         self.__mu: float = mu
         self.__sigma: float = sigma
-        self.__field: tuple = field
+        self.__area: tuple[float, float] = area
         self.__name: str = ""
 
     @property
@@ -17,7 +21,7 @@ class Layer:
         return self.__eps
 
     @eps.setter
-    def eps(self, value) -> bool:
+    def eps(self, value: float) -> bool:
         self.__eps = value
         return True
 
@@ -26,7 +30,7 @@ class Layer:
         return self.__mu
 
     @mu.setter
-    def mu(self, value) -> bool:
+    def mu(self, value: float) -> bool:
         self.__mu = value
         return True
 
@@ -35,17 +39,17 @@ class Layer:
         return self.__sigma
 
     @sigma.setter
-    def sigma(self, value) -> bool:
+    def sigma(self, value: float) -> bool:
         self.__sigma = value
         return True
 
     @property
-    def field(self) -> tuple[float]:
-        return self.__field
+    def area(self) -> tuple[float, float]:
+        return self.__area
 
-    @field.setter
-    def field(self, value: tuple[float]) -> bool:
-        self.__field = value
+    @area.setter
+    def area(self, value: tuple[float, float]) -> bool:
+        self.__area = value
         return True
 
     @property
