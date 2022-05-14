@@ -86,7 +86,7 @@ class Display:
         :rtype: bool
         """
         self.__yline.set_ydata(data)
-        self.__ax.set_title(str(time))
+        self.__ax.set_title(f"{time:.7g}")
         self.__fig.canvas.draw()
         self.__fig.canvas.flush_events()
         return True
