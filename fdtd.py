@@ -1,18 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import List, Any
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 
+from boundary import (ABCFirstLeft, ABCFirstRight, ABCSecondLeft,
+                      ABCSecondRight, Boundary, PECLeft, PECRight)
 from constants import W_0, c
 from display import Display
 from layer import Layer
 from probe import Probe
 from source import Source
-from boundary import PECLeft, PECRight, ABCFirstLeft, ABCFirstRight, ABCSecondLeft, ABCSecondRight
+from exceptions import BoundaryTypeError
+from progress_bar import ProgressBar, ConsoleOutput
 
 class FDTD:
     def __init__(
@@ -60,10 +63,10 @@ class FDTD:
                     boundary.mu = self.__mu[-1]
                     boundary.Sc = self.__Sc
                     boundary.update_coefficient()
-                case _, arg:
-                    print(f"Boundary undefined; Type is {type(arg)}")
-        for boundary in self.__boundary:
-            print(type(boundary))
+                case PECRight() | PECLeft():
+                    pass
+                case _:
+                    raise BoundaryTypeError
         return True
 
     def analyze(self) -> bool:
@@ -74,7 +77,7 @@ class FDTD:
 
         ceze = (1 - self.__sigma) / (1 + self.__sigma)
         cezh = W_0 / (self.__eps * (1 + self.__sigma))
-
+        progress = ProgressBar(ConsoleOutput())
         for q in range(self.__time_counts):
             self.__H = self.__H + (self.__E[1:] - self.__E[:-1]) * self.__Sc / (
                 W_0 * self.__mu
@@ -96,8 +99,8 @@ class FDTD:
             for source in self.__sources:
                 self.__E[source.position] += (
                     self.__Sc
-                    / (self.__eps[source.position] * self.__mu[source.position]) ** 0.5
-                    * source.E(-0.5, (q + 0.5))
+                    / (self.__eps[source.position] * self.__mu[source.position]) ** .5
+                    * source.E(-.5, (q + .5))
                 )
 
             for probe in self.__probes:
@@ -106,6 +109,7 @@ class FDTD:
             if not q % 3:
                 self.__display.update_data(self.__E, q * self.__dt)
                 self.__display.stop()
+            progress.show(q, self.__time_counts - 1)
         return True
 
     def show_probe_signals(self) -> bool:
@@ -128,15 +132,19 @@ class FDTD:
         return True
 
     def add_probes(self, probes_position: float | list[float]) -> bool:
-        if type(probes_position) == float:
-            self.__probes.append(
-                Probe(int(probes_position // self.__dx), self.__time_counts)
-            )
-        elif type(probes_position) == list:
-            for probe_position in probes_position:
+        match probes_position:
+            case float():
                 self.__probes.append(
-                    Probe(int(probe_position // self.__dx), self.__time_counts)
+                    Probe(int(probes_position // self.__dx), self.__time_counts)
                 )
+            case [*args]:
+                for probe_position in args:
+                    self.__probes.append(
+                        Probe(int(probe_position // self.__dx), self.__time_counts)
+                    )
+
+            case _:
+                raise TypeError
         return True
 
     def add_source(self, sources: Any) -> bool:
@@ -212,5 +220,3 @@ class FDTD:
     @property
     def eps(self) -> np.ndarray:
         return self.__eps
-
-
