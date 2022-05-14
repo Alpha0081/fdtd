@@ -47,7 +47,6 @@ class PECRight(Boundary):
         E[-1] = 0
         return True
 
-
 class PMCLeft(Boundary):
     def update_field(
         self, E: npt.NDArray[np.float64], H: npt.NDArray[np.float64]
