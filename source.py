@@ -6,7 +6,7 @@ from types import FunctionType, MethodType
 import numpy as np
 
 
-class Source(metaclass=ABCMeta):
+class SourceBase(metaclass=ABCMeta):
     @abstractmethod
     def E(self, m: float, q: float) -> float:
         pass
@@ -62,70 +62,72 @@ class Source(metaclass=ABCMeta):
         pass
 
 
+class Source(SourceBase):
+    @property
+    def position(self) -> float:
+        return self._position
+
+    @position.setter
+    def position(self, value: float) -> bool:
+        self._position = value
+        return True
+
+    @property
+    def eps(self) -> float:
+        return self._eps
+
+    @eps.setter
+    def eps(self, value: float) -> bool:
+        self._eps = value
+        return True
+
+    @property
+    def mu(self) -> float:
+        return self._mu
+
+    @mu.setter
+    def mu(self, value: float) -> bool:
+        self._mu = value
+        return True
+
+    @property
+    def Sc(self) -> float:
+        return self._Sc
+
+    @Sc.setter
+    def Sc(self, value: float) -> bool:
+        self._Sc = value
+        return True
+
+    @property
+    def dt(self) -> float:
+        return self._dt
+
+    @dt.setter
+    def dt(self, value: float) -> bool:
+        self._dt = value
+        return True
+
+
 class SourceGauss(Source):
     def __init__(self, position: float, delay: float, duration: float) -> None:
-        self.__position: float = position
-        self.__delay = delay
-        self.__duration = duration
+        self._position: float = position
+        self._delay = delay
+        self._duration = duration
 
     def E(self, m: float, q: float) -> float:
         return np.exp(
             -(
                 (
                     (
-                        (q - m * (self.__eps * self.__mu) ** 0.5 / self.__Sc)
-                        - self.__delay / self.__dt
+                        (q - m * (self._eps * self._mu) ** 0.5 / self._Sc)
+                        - self._delay / self._dt
                     )
-                    / (self.__duration / self.dt)
+                    / (self._duration / self.dt)
                 )
                 ** 2
             )
         )
-
-    @property
-    def position(self) -> float:
-        return self.__position
-
-    @position.setter
-    def position(self, value: float) -> bool:
-        self.__position = value
-        return True
-
-    @property
-    def eps(self) -> float:
-        return self.__eps
-
-    @eps.setter
-    def eps(self, value: float) -> bool:
-        self.__eps = value
-        return True
-
-    @property
-    def mu(self) -> float:
-        return self.__mu
-
-    @mu.setter
-    def mu(self, value: float) -> bool:
-        self.__mu = value
-        return True
-
-    @property
-    def Sc(self) -> float:
-        return self.__Sc
-
-    @Sc.setter
-    def Sc(self, value: float) -> bool:
-        self.__Sc = value
-        return True
-
-    @property
-    def dt(self) -> float:
-        return self.__dt
-
-    @dt.setter
-    def dt(self, value: float) -> bool:
-        self.__dt = value
-        return True
 
 
 class SourceModulatedGaussian(Source):
@@ -137,83 +139,38 @@ class SourceModulatedGaussian(Source):
         period: float,
         phase: float,
     ) -> None:
-        self.__position: float = position
-        self.__delay = delay
-        self.__duration = duration
-        self.__period = period
-        self.__phase = phase
+        self._position: float = position
+        self._delay = delay
+        self._duration = duration
+        self._period = period
+        self._phase = phase
 
     def E(self, m: float, q: float) -> float:
         return np.exp(
             -(
                 (
                     (
-                        (q - m * (self.__eps * self.__mu) ** 0.5 / self.__Sc)
-                        - self.__delay / self.__dt
+                        (q - m * (self._eps * self._mu) ** 0.5 / self._Sc)
+                        - self._delay / self._dt
                     )
-                    / (self.__duration / self.dt)
+                    / (self._duration / self.dt)
                 )
                 ** 2
             )
         ) * np.cos(
             2
             * np.pi
-            / (self.__period / self.__dt)
-            * (q - m * self.__eps * self.__mu / self.__Sc)
-            + self.__phase
+            / (self._period / self._dt)
+            * (q - m * self._eps * self._mu / self._Sc)
+            + self._phase
         )
-
-    @property
-    def position(self) -> float:
-        return self.__position
-
-    @position.setter
-    def position(self, value: float) -> bool:
-        self.__position = value
-        return True
-
-    @property
-    def eps(self) -> float:
-        return self.__eps
-
-    @eps.setter
-    def eps(self, value: float) -> bool:
-        self.__eps = value
-        return True
-
-    @property
-    def mu(self) -> float:
-        return self.__mu
-
-    @mu.setter
-    def mu(self, value: float) -> bool:
-        self.__mu = value
-        return True
-
-    @property
-    def Sc(self) -> float:
-        return self.__Sc
-
-    @Sc.setter
-    def Sc(self, value: float) -> bool:
-        self.__Sc = value
-        return True
-
-    @property
-    def dt(self) -> float:
-        return self.__dt
-
-    @dt.setter
-    def dt(self, value: float) -> bool:
-        self.__dt = value
-        return True
 
 
 class SourceRectangular(Source):
     def __init__(self, position: float, delay: float, duration: float) -> None:
-        self.__position: float = position
-        self.__delay = delay
-        self.__duration = duration
+        self._position: float = position
+        self._delay = delay
+        self._duration = duration
 
     def E(self, m: float, q: float) -> float:
         return (
@@ -221,133 +178,43 @@ class SourceRectangular(Source):
             if 0
             <= (
                 q
-                - m * (self.__eps * self.__mu) ** 0.5 / self.__Sc
-                - self.__delay / self.__dt
+                - m * (self._eps * self._mu) ** 0.5 / self._Sc
+                - self._delay / self._dt
             )
-            <= self.__duration / self.__dt
+            <= self._duration / self._dt
             else 0.0
         )
-
-    @property
-    def position(self) -> float:
-        return self.__position
-
-    @position.setter
-    def position(self, value: float) -> bool:
-        self.__position = value
-        return True
-
-    @property
-    def eps(self) -> float:
-        return self.__eps
-
-    @eps.setter
-    def eps(self, value: float) -> bool:
-        self.__eps = value
-        return True
-
-    @property
-    def mu(self) -> float:
-        return self.__mu
-
-    @mu.setter
-    def mu(self, value: float) -> bool:
-        self.__mu = value
-        return True
-
-    @property
-    def Sc(self) -> float:
-        return self.__Sc
-
-    @Sc.setter
-    def Sc(self, value: float) -> bool:
-        self.__Sc = value
-        return True
-
-    @property
-    def dt(self) -> float:
-        return self.__dt
-
-    @dt.setter
-    def dt(self, value: float) -> bool:
-        self.__dt = value
-        return True
 
 
 class SourceHarmonic(Source):
     def __init__(
         self, position: float, delay: float, frequency: float, phase: float, count=None
     ) -> None:
-        self.__position: float = position
-        self.__delay = delay
-        self.__frequency = frequency
-        self.__phase = phase
-        self.__count = count
+        self._position: float = position
+        self._delay = delay
+        self._frequency = frequency
+        self._phase = phase
+        self._count = count
 
     def E(self, m: float, q: float) -> float:
         return (
-            np.sin(
+             np.sin(
                 2
                 * np.pi
-                * self.__frequency
-                * self.__dt
-                * (q - m * self.__eps * self.__mu / self.__Sc)
-                + self.__phase
+                * self._frequency
+                * self._dt
+                * (q - m * self._eps * self._mu / self._Sc)
+                + self._phase
             )
-            if self.__count is None
+            if self._count is None
             else np.sin(
                 2
                 * np.pi
-                * self.__frequency
-                * self.__dt
-                * (q - m * self.__eps * self.__mu / self.__Sc)
-                + self.__phase
+                * self._frequency
+                * self._dt
+                * (q - m * self._eps * self._mu / self._Sc)
+                + self._phase
             )
-            if q * self.__dt <= self.__count / self.__frequency
+            if q * self._dt <= self._count / self._frequency
             else 0
         )
-
-    @property
-    def position(self) -> float:
-        return self.__position
-
-    @position.setter
-    def position(self, value: float) -> bool:
-        self.__position = value
-        return True
-
-    @property
-    def eps(self) -> float:
-        return self.__eps
-
-    @eps.setter
-    def eps(self, value: float) -> bool:
-        self.__eps = value
-        return True
-
-    @property
-    def mu(self) -> float:
-        return self.__mu
-
-    @mu.setter
-    def mu(self, value: float) -> bool:
-        self.__mu = value
-        return True
-
-    @property
-    def Sc(self) -> float:
-        return self.__Sc
-
-    @Sc.setter
-    def Sc(self, value: float) -> bool:
-        self.__Sc = value
-        return True
-
-    @property
-    def dt(self) -> float:
-        return self.__dt
-
-    @dt.setter
-    def dt(self, value: float) -> bool:
-        self.__dt = value
-        return True

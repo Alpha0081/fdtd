@@ -6,6 +6,8 @@ import numpy.typing as npt
 from .probe import Probe
 from .source import Source
 from typing import List
+import pyqtgraph as pg
+from random import randint
 
 
 class Display:
@@ -24,13 +26,13 @@ class Display:
 
         :rtype: bool
         """
-        plt.ion()
-        self.__fig, self.__ax = plt.subplots()
-        self.__ax.set_xlim(0, self.__xlim[1] * dx)
-        self.__ax.set_ylim(self.__ylim[0], self.__ylim[1])
-        self.__ax.set_xlabel("м")
-        self.__ax.grid()
-        (self.__yline,) = self.__ax.plot(self.__xlist * dx, np.zeros(self.__xlim[1]))
+        self.__dx = dx
+        self.__plot = pg.plot()
+        self.__plot.setXRange(0, self.__xlim[1] * dx)
+        self.__plot.setYRange(self.__ylim[0], self.__ylim[1])
+        self.__plot.setLabel("bottom", "м")
+        self.__plot.showGrid(x=True, y=True)
+        self.__curve = self.__plot.plot(pen="y")
         return True
 
     def draw_probes(self, probes: list[Probe], dx: float) -> bool:
@@ -41,7 +43,7 @@ class Display:
         :rtype: bool
         """
         for probe in probes:
-            self.__ax.plot(probe.position * dx, 0, color="red", marker="x")
+            self.__plot.plot([probe.position * dx], [0], pen=None, symbol="x")
         return True
 
     def draw_sources(self, sources: list[Source], dx: float) -> bool:
@@ -52,8 +54,7 @@ class Display:
         :rtype: bool
         """
         for source in sources:
-            self.__ax.plot(source.position * dx, [0], color="black", marker="o")
-
+            self.__plot.plot([source.position * dx], [0], pen=None, symbol="o")
         return True
 
     def draw_borders(self, positions: list[float]) -> bool:
@@ -63,9 +64,7 @@ class Display:
         :rtype: bool
         """
         for position in positions:
-            self.__ax.plot(
-                [position, position], self.__ylim, color="black", linestyle="--"
-            )
+            self.__plot.plot([position, position], self.__ylim, pen="w")
         return True
 
     def stop(self) -> bool:
@@ -76,17 +75,28 @@ class Display:
         plt.ioff()
         return True
 
-    def update_data(self, data: npt.NDArray[np.float64], time: float) -> bool:
-        """update_data.
+    def show_probe_signals(self, time_duration, dt, dx, probes) -> bool:
+        p = pg.plot()
 
-        :param data:
-        :type data: np.ndarray
-        :param time:
-        :type time: int
-        :rtype: bool
-        """
-        self.__yline.set_ydata(data)
-        self.__ax.set_title(str(time))
-        self.__fig.canvas.draw()
-        self.__fig.canvas.flush_events()
+        p.addLegend()
+        for probe in probes:
+            p.plot(
+                np.arange(probe.time) * dt,
+                probe.E,
+                name=f"Probe x = {probe.position * dx}",
+                pen=(randint(1, 254), randint(1, 254), randint(1, 254)),
+            )
+
+        p.setXRange(0, time_duration)
+        p.setYRange(-1.1, 1.1)
+        p.setLabel("bottom", "Время, с")
+        p.setLabel("left", "Ez, В/м")
+        p.showGrid(x=True, y=True)
+
+        #  plt.show()
+        pg.exec()
         return True
+
+    def draw(self, data, time) -> bool:
+        self.__curve.setData(self.__xlist * self.__dx, data)
+        self.__plot.setTitle(f"{time:.7g}")

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fdtd"
-version = "0.1.0"
+version = "0.1.1"
 description = "1-D FDTD"
 authors = ["Artem Mikhailov <artem.mihaylov.2017@gmail.com>"]
 license = "GPLv3"
