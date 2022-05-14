@@ -6,16 +6,18 @@ from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
+import pyqtgraph as pg
 
 from boundary import (ABCFirstLeft, ABCFirstRight, ABCSecondLeft,
                       ABCSecondRight, Boundary, PECLeft, PECRight)
 from constants import W_0, c
 from display import Display
+from exceptions import BoundaryTypeError
 from layer import Layer
 from probe import Probe
+from progress_bar import ConsoleOutput, ProgressBar
 from source import Source
-from exceptions import BoundaryTypeError
-from progress_bar import ProgressBar, ConsoleOutput
+
 
 class FDTD:
     def __init__(
@@ -75,21 +77,32 @@ class FDTD:
         self.__display.draw_borders(self.__borders)
         self.__display.draw_sources(self.__sources, self.__dx)
 
-        ceze = (1 - self.__sigma) / (1 + self.__sigma)
-        cezh = W_0 / (self.__eps * (1 + self.__sigma))
-        progress = ProgressBar(ConsoleOutput())
-        for q in range(self.__time_counts):
+        self.__ceze = (1 - self.__sigma) / (1 + self.__sigma)
+        self.__cezh = W_0 / (self.__eps * (1 + self.__sigma))
+        self.__progress = ProgressBar(ConsoleOutput())
+        self.__current_time = 0
+        self.timer = pg.Qt.QtCore.QTimer()
+        self.timer.timeout.connect(self.next_iteration)
+        self.timer.start(int(1000 // 144))
+        pg.exec()
+        return True
+
+    def show_probe_signals(self):
+        self.__display.show_probe_signals(self.__time_duration, self.__dt, self.__dx, self.__probes)
+
+    def next_iteration(self):
+        if int(self.__current_time // self.__dt) < self.__time_counts:
             self.__H = self.__H + (self.__E[1:] - self.__E[:-1]) * self.__Sc / (
-                W_0 * self.__mu
+            W_0 * self.__mu
             )
             for source in self.__sources:
                 self.__H[source.position - 1] -= (
-                    self.__Sc / (W_0 * self.__mu[source.position - 1]) * source.E(0, q)
-                )
+                self.__Sc / (W_0 * self.__mu[source.position - 1]) * source.E(0, self.__current_time / self.__dt)
+            )
 
             self.__E[1:-1] = (
-                ceze[1:-1] * self.__E[1:-1]
-                + (self.__H[1:] - self.__H[:-1]) * self.__Sc * cezh[1:-1]
+                self.__ceze[1:-1] * self.__E[1:-1]
+                + (self.__H[1:] - self.__H[:-1]) * self.__Sc * self.__cezh[1:-1]
             )
             
             for boundary in self.__boundary:
@@ -100,36 +113,20 @@ class FDTD:
                 self.__E[source.position] += (
                     self.__Sc
                     / (self.__eps[source.position] * self.__mu[source.position]) ** .5
-                    * source.E(-.5, (q + .5))
+                    * source.E(-.5, (self.__current_time / self.__dt + .5))
                 )
 
             for probe in self.__probes:
                 probe.add_data(self.__E, self.__H)
 
-            if not q % 3:
-                self.__display.update_data(self.__E, q * self.__dt)
-                self.__display.stop()
-            progress.show(q, self.__time_counts - 1)
+            self.__progress.show(self.__current_time / self.__dt, self.__time_counts - 1)
+            self.__display.draw(self.__E, self.__current_time)
+            self.__current_time += self.__dt
+        else:
+            self.timer.stop()
         return True
+            
 
-    def show_probe_signals(self) -> bool:
-        fig, ax = plt.subplots()
-
-        ax.set_xlim(0, self.__dt * self.__time_counts)
-        ax.set_ylim(-1.1, 1.1)
-        ax.set_xlabel("Время, с")
-        ax.set_ylabel("Ez, В/м")
-        ax.grid()
-
-        for probe in self.__probes:
-            ax.plot(np.arange(probe.time) * self.__dt, probe.E)
-
-        legend = [
-            "Probe x = {}".format(probe.position * self.__dx) for probe in self.__probes
-        ]
-        ax.legend(legend)
-        plt.show()
-        return True
 
     def add_probes(self, probes_position: float | list[float]) -> bool:
         match probes_position:
