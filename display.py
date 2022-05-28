@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import matplotlib.pyplot as plt
+from random import randint
+from typing import List
+
 import numpy as np
 import numpy.typing as npt
+import pyqtgraph as pg
+
 from probe import Probe
 from source import Source
-from typing import List
-import pyqtgraph as pg
-from random import randint
 
 
 class Display:
@@ -67,14 +68,6 @@ class Display:
             self.__plot.plot([position, position], self.__ylim, pen="w")
         return True
 
-    def stop(self) -> bool:
-        """stop.
-
-        :rtype: bool
-        """
-        plt.ioff()
-        return True
-
     def show_probe_signals(self, time_duration, dt, dx, probes) -> bool:
         p = pg.plot()
 
@@ -93,10 +86,10 @@ class Display:
         p.setLabel("left", "Ez, В/м")
         p.showGrid(x=True, y=True)
 
-        #  plt.show()
         pg.exec()
         return True
 
     def draw(self, data, time) -> bool:
         self.__curve.setData(self.__xlist * self.__dx, data)
         self.__plot.setTitle(f"{time:.7g}")
+        return True

@@ -11,64 +11,14 @@ class SourceBase(metaclass=ABCMeta):
     def E(self, m: float, q: float) -> float:
         pass
 
-    @property
-    @abstractmethod
-    def position(self) -> float:
-        pass
-
-    @position.setter
-    @abstractmethod
-    def position(self, value: float) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def eps(self) -> float:
-        pass
-
-    @eps.setter
-    @abstractmethod
-    def eps(self, value: float) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def mu(self) -> float:
-        pass
-
-    @mu.setter
-    @abstractmethod
-    def mu(self, value: float) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def Sc(self) -> float:
-        pass
-
-    @Sc.setter
-    @abstractmethod
-    def Sc(self, value: float) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def dt(self) -> float:
-        pass
-
-    @dt.setter
-    @abstractmethod
-    def dt(self, value: float) -> bool:
-        pass
-
 
 class Source(SourceBase):
     @property
-    def position(self) -> float:
+    def position(self) -> int:
         return self._position
 
     @position.setter
-    def position(self, value: float) -> bool:
+    def position(self, value: int) -> bool:
         self._position = value
         return True
 
