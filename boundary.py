@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from abc import abstractmethod
+
 import numpy as np
 import numpy.typing as npt
-from abc import ABCMeta, abstractmethod
 
 
-class Boundary(metaclass=ABCMeta):
+class Boundary:
     @abstractmethod
     def update_field(
         self, E: npt.NDArray[np.float64], H: npt.NDArray[np.float64]
@@ -46,6 +47,7 @@ class PECRight(Boundary):
     ) -> bool:
         E[-1] = 0
         return True
+
 
 class PMCLeft(Boundary):
     def update_field(
